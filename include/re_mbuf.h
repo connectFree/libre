@@ -2,10 +2,12 @@
  * @file re_mbuf.h  Interface to memory buffers
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 
 
 #include <stdarg.h>
+#include <string.h>
 
 
 #ifndef RELEASE
@@ -81,6 +83,23 @@ static inline uint8_t *mbuf_buf(const struct mbuf *mb)
 	return mb ? mb->buf + mb->pos : (uint8_t *)NULL;
 }
 
+/**
+ * Clone a Memory buffer
+ *
+ * @param mb Memory buffer
+ *
+ * @return Cloned buffer
+ */
+static inline struct mbuf *mbuf_clone(const struct mbuf *mb)
+{
+	struct mbuf *out;
+	if (!mb) return NULL;
+	out = mbuf_alloc(mb->size);
+	memcpy(out->buf, mb->buf, mb->size);
+	out->pos = mb->pos;
+	out->end = mb->end;
+	return out;
+}
 
 /**
  * Get number of bytes left in a memory buffer, from current position to end

@@ -2,6 +2,7 @@
  * @file pl.c Pointer-length functions
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 #include <ctype.h>
 #include <sys/types.h>
@@ -16,6 +17,9 @@
 #include <re_mbuf.h>
 #include <re_fmt.h>
 
+#define DEBUG_MODULE "fmt"
+#define DEBUG_LEVEL 4
+#include <re_dbg.h>
 
 /** Pointer-length NULL initialiser */
 const struct pl pl_null = {NULL, 0};
@@ -183,6 +187,89 @@ uint64_t pl_x64(const struct pl *pl)
 	}
 
 	return v;
+}
+
+/**
+ * Read a block of memory from a Pointer-length object
+ *
+ * @param pl   Pointer-length object
+ * @param buf  Buffer to read data to
+ * @param size Size of buffer
+ *
+ * @return 0 if success, otherwise errorcode
+ */
+int pl_read_mem(struct pl *pl, uint8_t *buf, size_t size)
+{
+	if (!pl || !buf)
+		return EINVAL;
+
+	if (size > pl->l) {
+		DEBUG_WARNING("tried to read beyond pl end (%u > %u)\n",
+			      size, pl->l);
+		return EOVERFLOW;
+	}
+
+	memcpy(buf, pl->p, size);
+
+	pl->p += size;
+	pl->l -= size;
+
+	return 0;
+}
+
+/**
+ * Read an 8-bit value from a Pointer-length object
+ *
+ * @param pl Pointer-length object
+ *
+ * @return 8-bit value
+ */
+uint8_t pl_read_u8(struct pl *pl)
+{
+	uint8_t v;
+	return (0 == pl_read_mem(pl, &v, sizeof(v))) ? v : 0;
+}
+
+
+/**
+ * Read a 16-bit value from a Pointer-length object
+ *
+ * @param pl Pointer-length object
+ *
+ * @return 16-bit value
+ */
+uint16_t pl_read_u16(struct pl *pl)
+{
+	uint16_t v;
+	return (0 == pl_read_mem(pl, (uint8_t *)&v, sizeof(v))) ? v : 0;
+}
+
+
+/**
+ * Read a 32-bit value from a Pointer-length object
+ *
+ * @param pl Pointer-length object
+ *
+ * @return 32-bit value
+ */
+uint32_t pl_read_u32(struct pl *pl)
+{
+	uint32_t v;
+	return (0 == pl_read_mem(pl, (uint8_t *)&v, sizeof(v))) ? v : 0;
+}
+
+
+/**
+ * Read a 64-bit value from a Pointer-length object
+ *
+ * @param pl Pointer-length object
+ *
+ * @return 64-bit value
+ */
+uint64_t pl_read_u64(struct pl *pl)
+{
+	uint64_t v;
+	return (0 == pl_read_mem(pl, (uint8_t *)&v, sizeof(v))) ? v : 0;
 }
 
 

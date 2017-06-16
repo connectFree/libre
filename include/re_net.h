@@ -2,6 +2,7 @@
  * @file re_net.h  Interface to Networking module.
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 #ifdef CYGWIN
 #include <ws2tcpip.h>
@@ -86,6 +87,8 @@ int net_if_apply(net_ifaddr_h *ifh, void *arg);
 int net_if_debug(struct re_printf *pf, void *unused);
 int net_if_getlinklocal(const char *ifname, int af, struct sa *ip);
 
+int net_if_setmtu(const char *ifname, uint32_t mtu);
+int net_if_setaddr(const char *ifname, const struct sa *ip, int prefix_len);
 
 /* Net interface (ifaddrs.c) */
 int net_getifaddrs(net_ifaddr_h *ifh, void *arg);

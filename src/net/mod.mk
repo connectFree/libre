@@ -2,6 +2,7 @@
 # mod.mk
 #
 # Copyright (C) 2010 Creytiv.com
+# Copyright (C) 2017 kristopher tate & connectFree Corporation
 #
 
 # Generic files
@@ -40,4 +41,14 @@ endif
 
 ifdef HAVE_GETIFADDRS
 SRCS	+= net/ifaddrs.c
+endif
+
+#ifset
+ifeq ($(OS),darwin)
+SRCS	+= net/darwin/ifset.c
+CFLAGS  += -DHAVE_NETIFSET
+endif
+ifeq ($(OS),linux)
+SRCS	+= net/linux/ifset.c
+CFLAGS  += -DHAVE_NETIFSET
 endif

@@ -2,6 +2,7 @@
  * @file re_fmt.h  Interface to formatted text functions
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 
 
@@ -42,6 +43,12 @@ int      pl_strcasecmp(const struct pl *pl, const char *str);
 int      pl_cmp(const struct pl *pl1, const struct pl *pl2);
 int      pl_casecmp(const struct pl *pl1, const struct pl *pl2);
 const char *pl_strchr(const struct pl *pl, char c);
+
+int pl_read_mem(struct pl *pl, uint8_t *buf, size_t size);
+uint8_t pl_read_u8(struct pl *pl);
+uint16_t pl_read_u16(struct pl *pl);
+uint32_t pl_read_u32(struct pl *pl);
+uint64_t pl_read_u64(struct pl *pl);
 
 /** Advance pl position/length by +/- N bytes */
 static inline void pl_advance(struct pl *pl, ssize_t n)

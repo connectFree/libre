@@ -2,6 +2,7 @@
  * @file re_odict.h  Interface to Ordered Dictionary
  *
  * Copyright (C) 2010 - 2015 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 
 enum odict_type {
@@ -24,7 +25,7 @@ struct odict_entry {
 	char *key;
 	union {
 		struct odict *odict;   /* ODICT_OBJECT / ODICT_ARRAY */
-		char *str;             /* ODICT_STRING */
+		struct pl pl;          /* ODICT_STRING */
 		int64_t integer;       /* ODICT_INT    */
 		double dbl;            /* ODICT_DOUBLE */
 		bool boolean;          /* ODICT_BOOL   */

@@ -2,6 +2,7 @@
  * @file odict/entry.c  Ordered Dictionary -- entry
  *
  * Copyright (C) 2010 - 2015 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 
 #include "re_types.h"
@@ -24,7 +25,7 @@ static void destructor(void *arg)
 		break;
 
 	case ODICT_STRING:
-		mem_deref(e->u.str);
+		mem_deref((void *)e->u.pl.p);
 		break;
 
 	default:
@@ -67,7 +68,7 @@ int odict_entry_add(struct odict *o, const char *key,
 		break;
 
 	case ODICT_STRING:
-		err = str_dup(&e->u.str, va_arg(ap, const char *));
+		err = pl_dup(&e->u.pl, va_arg(ap, const struct pl *));
 		break;
 
 	case ODICT_INT:
@@ -129,7 +130,7 @@ int odict_entry_debug(struct re_printf *pf, const struct odict_entry *e)
 		break;
 
 	case ODICT_STRING:
-		err |= re_hprintf(pf, ":%s", e->u.str);
+		err |= re_hprintf(pf, ":(%llu)[%w]", (uint64_t)e->u.pl.l, e->u.pl.p, e->u.pl.l);
 		break;
 
 	case ODICT_INT:

@@ -2,6 +2,7 @@
 # re.mk - common make rules
 #
 # Copyright (C) 2010 Creytiv.com
+# Copyright (C) 2017 kristopher tate & connectFree Corporation
 #
 # Imported variables:
 #
@@ -251,6 +252,7 @@ ifeq ($(OS),gnu)
 endif
 ifeq ($(OS),darwin)
 	CFLAGS		+= -fPIC -dynamic -DDARWIN
+	LFLAGS	+= -framework SystemConfiguration -framework CoreFoundation
 ifneq (,$(findstring Apple, $(CC_LONGVER)))
 	CFLAGS		+= -Wshorten-64-to-32
 endif
@@ -459,7 +461,7 @@ endif
 # External libraries section
 #
 
-USE_OPENSSL := $(shell [ -f $(SYSROOT)/include/openssl/ssl.h ] || \
+USE_OPENSSL ?= $(shell [ -f $(SYSROOT)/include/openssl/ssl.h ] || \
 	[ -f $(SYSROOT)/local/include/openssl/ssl.h ] || \
 	[ -f $(SYSROOT_ALT)/include/openssl/ssl.h ] && echo "yes")
 
@@ -771,7 +773,7 @@ rpm:    tar
 # - system installation
 #
 
-LIBRE_PATH := ../re
+LIBRE_PATH ?= ../re
 
 # Include path
 LIBRE_INC := $(shell [ -f $(LIBRE_PATH)/include/re.h ] && \

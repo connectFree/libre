@@ -2,6 +2,7 @@
  * @file json/encode.c  JSON encoder
  *
  * Copyright (C) 2010 - 2015 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 #include <re_types.h>
 #include <re_fmt.h>
@@ -53,7 +54,7 @@ static int encode_entry(struct re_printf *pf, const struct odict_entry *e)
 		break;
 
 	case ODICT_STRING:
-		err = re_hprintf(pf, "\"%H\"", utf8_encode, e->u.str);
+		err = re_hprintf(pf, "\"%H\"", utf8_encode, e->u.pl.p);
 		break;
 
 	case ODICT_BOOL:
