@@ -59,7 +59,7 @@ static int entry_add(struct odict *o, const char *name,
 	switch (val->type) {
 
 	case JSON_STRING:
-		return odict_entry_add(o, name, ODICT_STRING, val->v.str);
+		return odict_entry_add(o, name, ODICT_STRING, &val->v.pl);
 
 	case JSON_INT:
 		return odict_entry_add(o, name, ODICT_INT, val->v.integer);

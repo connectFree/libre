@@ -14,7 +14,7 @@ enum json_typ {
 
 struct json_value {
 	union {
-		char *str;
+		struct pl pl;
 		int64_t integer;
 		double dbl;
 		bool boolean;

@@ -5,7 +5,7 @@
  */
 
 
-typedef unsigned long bitv_t;
+typedef uint32_t bitv_t;
 
 enum {
 	BITS_SZ   = (8*sizeof(bitv_t)),

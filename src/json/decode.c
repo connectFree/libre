@@ -137,8 +137,8 @@ static int decode_value(struct json_value *val, const struct pl *pl)
 		return EBADMSG;
 
 	if (is_string(&pls, pl)) {
-
-		err = re_sdprintf(&val->v.str, "%H", utf8_decode, &pls);
+		err = re_sdprintf((char **)&val->v.pl.p, "%H", utf8_decode, &pls);
+		val->v.pl.l = str_len(val->v.pl.p);
 		val->type = JSON_STRING;
 	}
 	else if (is_number(&dbl, &isfloat, pl)) {
@@ -194,7 +194,7 @@ static int object_entry(const struct pl *pl_name, const struct pl *pl_val,
 		err = oeh(name, &val, arg);
 
 	if (val.type == JSON_STRING)
-		mem_deref(val.v.str);
+		mem_deref((void *)val.v.pl.p);
 
  out:
 	mem_deref(name);
@@ -217,7 +217,7 @@ static int array_entry(unsigned idx, const struct pl *pl_val,
 		err = aeh(idx, &val, arg);
 
 	if (val.type == JSON_STRING)
-		mem_deref(val.v.str);
+		mem_deref((void *)val.v.pl.p);
 
 	return err;
 }
