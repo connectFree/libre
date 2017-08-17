@@ -2,6 +2,7 @@
  * @file re_udp.h  Interface to User Datagram Protocol
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 
 
@@ -22,6 +23,11 @@ typedef void (udp_error_h)(int err, void *arg);
 
 int  udp_listen(struct udp_sock **usp, const struct sa *local,
 		udp_recv_h *rh, void *arg);
+int udp_listen_advanced( struct udp_sock **usp
+                       , const struct sa *local
+                       , udp_recv_h *rh
+                       , bool sockopt_reuse
+                       , void *arg);
 int  udp_connect(struct udp_sock *us, const struct sa *peer);
 int  udp_send(struct udp_sock *us, const struct sa *dst, struct mbuf *mb);
 int  udp_send_anon(const struct sa *dst, struct mbuf *mb);

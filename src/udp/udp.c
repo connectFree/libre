@@ -2,6 +2,7 @@
  * @file udp.c  User Datagram Protocol
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
@@ -242,19 +243,11 @@ static void udp_read_handler6(int flags, void *arg)
 	udp_read(us, us->fd6);
 }
 
-
-/**
- * Create and listen on a UDP Socket
- *
- * @param usp   Pointer to returned UDP Socket
- * @param local Local network address
- * @param rh    Receive handler
- * @param arg   Handler argument
- *
- * @return 0 if success, otherwise errorcode
- */
-int udp_listen(struct udp_sock **usp, const struct sa *local,
-	       udp_recv_h *rh, void *arg)
+int udp_listen_advanced( struct udp_sock **usp
+                       , const struct sa *local
+                       , udp_recv_h *rh
+                       , bool sockopt_reuse
+                       , void *arg)
 {
 	struct addrinfo hints, *res = NULL, *r;
 	struct udp_sock *us = NULL;
@@ -329,6 +322,13 @@ int udp_listen(struct udp_sock **usp, const struct sa *local,
 			continue;
 		}
 
+    err = net_sockopt_reuse_set(fd, sockopt_reuse);
+    if (err) {
+      DEBUG_WARNING("udp listen: reuse set: %m\n", err);
+      (void)close(fd);
+      continue;
+    }
+
 		if (bind(fd, r->ai_addr, SIZ_CAST r->ai_addrlen) < 0) {
 			err = errno;
 			DEBUG_INFO("listen: bind(): %m (%J)\n", err, local);
@@ -388,6 +388,22 @@ int udp_listen(struct udp_sock **usp, const struct sa *local,
 		*usp = us;
 
 	return err;
+}
+
+/**
+ * Create and listen on a UDP Socket
+ *
+ * @param usp   Pointer to returned UDP Socket
+ * @param local Local network address
+ * @param rh    Receive handler
+ * @param arg   Handler argument
+ *
+ * @return 0 if success, otherwise errorcode
+ */
+int udp_listen(struct udp_sock **usp, const struct sa *local,
+         udp_recv_h *rh, void *arg)
+{
+  return udp_listen_advanced(usp, local, rh, false, arg);
 }
 
 
