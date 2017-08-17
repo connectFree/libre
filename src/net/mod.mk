@@ -52,3 +52,7 @@ ifeq ($(OS),linux)
 SRCS	+= net/linux/ifset.c
 CFLAGS  += -DHAVE_NETIFSET
 endif
+ifeq ($(OS),win32)
+SRCS	+= net/win32/ifset.c
+CFLAGS  += -DHAVE_NETIFSET
+endif
