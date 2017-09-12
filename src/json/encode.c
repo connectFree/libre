@@ -54,7 +54,7 @@ static int encode_entry(struct re_printf *pf, const struct odict_entry *e)
 		break;
 
 	case ODICT_STRING:
-		err = re_hprintf(pf, "\"%H\"", utf8_encode, e->u.pl.p);
+		err = re_hprintf(pf, "\"%H\"", utf8_encode_pl, &e->u.pl);
 		break;
 
 	case ODICT_BOOL:
