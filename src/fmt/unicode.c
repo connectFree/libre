@@ -2,6 +2,7 @@
  * @file unicode.c  Unicode character coding
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 #include <ctype.h>
 #include <re_types.h>
@@ -21,16 +22,28 @@ static const char *hex_chars = "0123456789ABCDEF";
  */
 int utf8_encode(struct re_printf *pf, const char *str)
 {
+	return utf8_encode_pl(pf, &(struct pl){ .p=str
+																				, .l=str_len(str)});
+}
+
+int utf8_encode_pl(struct re_printf *pf, const struct pl *pl)
+{
+	struct pl pli;
 	char ubuf[6] = "\\u00", ebuf[2] = "\\";
 
 	if (!pf)
 		return EINVAL;
 
-	if (!str)
+	if (!pl)
 		return 0;
 
-	while (*str) {
-		const uint8_t c = *str++;  /* NOTE: must be unsigned 8-bit */
+	pli.p = pl->p;
+	pli.l = pl->l;
+
+	while (pli.l) {
+		const uint8_t c = *(pli.p);  /* NOTE: must be unsigned 8-bit */
+		pl_advance(&pli, 1);
+
 		bool unicode = false;
 		char ec = 0;
 		int err;

@@ -150,4 +150,5 @@ void fmt_param_apply(const struct pl *pl, fmt_param_h *ph, void *arg);
 
 /* unicode */
 int utf8_encode(struct re_printf *pf, const char *str);
+int utf8_encode_pl(struct re_printf *pf, const struct pl *pl);
 int utf8_decode(struct re_printf *pf, const struct pl *pl);
