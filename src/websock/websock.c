@@ -387,7 +387,7 @@ static void http_resp_handler(int err, const struct http_msg *msg, void *arg)
 	struct pl key;
 	char buf[32];
 
-	if (err || msg->scode != 101)
+	if (err || !msg || msg->scode != 101)
 		goto fail;
 
 	if (!http_msg_hdr_has_value(msg, HTTP_HDR_UPGRADE, "websocket"))
