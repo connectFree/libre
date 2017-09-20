@@ -944,6 +944,7 @@ int re_main(re_signal_h *signalh)
 		(void)signal(SIGINT, signal_handler);
 		(void)signal(SIGALRM, signal_handler);
 		(void)signal(SIGTERM, signal_handler);
+		(void)signal(SIGPIPE, signal_handler);
 	}
 #endif
 
