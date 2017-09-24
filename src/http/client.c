@@ -34,6 +34,7 @@ struct http_cli {
 	struct hash *ht_conn;
 	struct dnsc *dnsc;
 	struct tls *tls;
+  struct sa bind;
 };
 
 struct conn;
@@ -389,8 +390,14 @@ static int conn_connect(struct http_req *req)
 	conn->addr = *addr;
 	conn->usec = 1;
 
-	err = tcp_connect(&conn->tc, addr, estab_handler, recv_handler,
-			  close_handler, conn);
+	err = tcp_bind_connect( &conn->tc
+                        , addr
+                        , (sa_isset(&req->cli->bind, SA_ADDR) ? &req->cli->bind
+                                                              : NULL)
+                        , estab_handler
+                        , recv_handler
+                        , close_handler
+                        , conn);
 	if (err)
 		goto out;
 
@@ -643,6 +650,48 @@ int http_client_alloc(struct http_cli **clip, struct dnsc *dnsc)
 	return err;
 }
 
+/**
+ * Bind an HTTP client instance to a local address
+ *
+ * @param cli      HTTP client instance
+ * @param local    Bindable network address
+ *
+ * @return 0 if success, otherwise errorcode
+ */
+int http_client_bind(struct http_cli *cli, const struct sa *local)
+{
+  int err = 0;
+
+  if (!cli)
+    return EINVAL;
+
+  if (local) {
+    sa_cpy(&cli->bind, local);
+  } else {
+    sa_init(&cli->bind, 0);
+  }
+
+  return err;
+}
+
+/**
+ * Get the bound address for an HTTP client instance
+ *
+ * @param cli      HTTP client instance
+ *
+ * @return 0 if success, otherwise errorcode
+ */
+const struct sa *http_client_bound(struct http_cli *cli)
+{
+  if (!cli)
+    return NULL;
+
+  if (sa_isset(&cli->bind, SA_ADDR)) {
+    return &cli->bind;
+  }
+
+  return NULL;
+}
 
 struct tcp_conn *http_req_tcp(struct http_req *req)
 {

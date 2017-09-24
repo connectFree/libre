@@ -2,6 +2,7 @@
  * @file re_http.h  Hypertext Transfer Protocol
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (c) 2017 kristopher tate & connectFree Corporation
  */
 
 
@@ -119,6 +120,8 @@ typedef void (http_resp_h)(int err, const struct http_msg *msg, void *arg);
 typedef void (http_data_h)(struct mbuf *mb, void *arg);
 
 int http_client_alloc(struct http_cli **clip, struct dnsc *dnsc);
+int http_client_bind(struct http_cli *cli, const struct sa *local);
+const struct sa *http_client_bound(struct http_cli *cli);
 int http_request(struct http_req **reqp, struct http_cli *cli, const char *met,
 		 const char *uri, http_resp_h *resph, http_data_h *datah,
 		 void *arg, const char *fmt, ...);
