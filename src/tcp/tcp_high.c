@@ -2,6 +2,7 @@
  * @file tcp_high.c  High-level TCP functions
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (c) 2017 kristopher tate & connectFree Corporation
  */
 #include <re_types.h>
 #include <re_mem.h>
@@ -49,9 +50,58 @@ int tcp_listen(struct tcp_sock **tsp, const struct sa *local,
 	return err;
 }
 
-
 /**
  * Make a TCP Connection to a remote peer
+ *
+ * @param tcp  Returned TCP Connection object
+ * @param peer Network address of peer
+ * @param peer Network address to bind to
+ * @param eh   TCP Connection Established handler
+ * @param rh   TCP Connection Receive data handler
+ * @param ch   TCP Connection close handler
+ * @param arg  Handler argument
+ *
+ * @return 0 if success, otherwise errorcode
+ */
+int tcp_bind_connect( struct tcp_conn **tcp
+                    , const struct sa *peer
+                    , const struct sa *bind
+                    , tcp_estab_h *eh
+                    , tcp_recv_h *rh
+                    , tcp_close_h *ch
+                    , void *arg )
+{
+  struct tcp_conn *tc = NULL;
+  int err;
+
+  if (!tcp || !peer)
+    return EINVAL;
+
+  err = tcp_conn_alloc(&tc, peer, eh,rh, ch, arg);
+  if (err)
+    goto out;
+
+  if (bind) {
+    err = tcp_conn_bind(tc, bind);
+    if (err)
+      goto out;
+  }
+  
+  err = tcp_conn_connect(tc, peer);
+  if (err)
+    goto out;
+
+ out:
+  if (err)
+    tc = mem_deref(tc);
+  else
+    *tcp = tc;
+
+  return err;
+}
+
+/**
+ * Make a TCP Connection to a remote peer (API compatibility)
  *
  * @param tcp  Returned TCP Connection object
  * @param peer Network address of peer
@@ -65,27 +115,13 @@ int tcp_listen(struct tcp_sock **tsp, const struct sa *local,
 int tcp_connect(struct tcp_conn **tcp, const struct sa *peer,
 		tcp_estab_h *eh, tcp_recv_h *rh, tcp_close_h *ch, void *arg)
 {
-	struct tcp_conn *tc = NULL;
-	int err;
-
-	if (!tcp || !peer)
-		return EINVAL;
-
-	err = tcp_conn_alloc(&tc, peer, eh,rh, ch, arg);
-	if (err)
-		goto out;
-
-	err = tcp_conn_connect(tc, peer);
-	if (err)
-		goto out;
-
- out:
-	if (err)
-		tc = mem_deref(tc);
-	else
-		*tcp = tc;
-
-	return err;
+  return tcp_bind_connect( tcp
+                         , peer
+                         , NULL
+                         , eh
+                         , rh
+                         , ch
+                         , arg );
 }
 
 

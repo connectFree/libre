@@ -2,6 +2,7 @@
  * @file re_tcp.h  Interface to Transport Control Protocol
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (c) 2017 kristopher tate & connectFree Corporation
  */
 struct sa;
 struct tcp_sock;
@@ -79,6 +80,9 @@ size_t tcp_conn_txqsz(const struct tcp_conn *tc);
 /* High-level API */
 int  tcp_listen(struct tcp_sock **tsp, const struct sa *local,
 		tcp_conn_h *ch, void *arg);
+int  tcp_bind_connect(struct tcp_conn **tcp, const struct sa *peer,
+     const struct sa *bind, tcp_estab_h *eh, tcp_recv_h *rh,
+     tcp_close_h *ch, void *arg);
 int  tcp_connect(struct tcp_conn **tcp, const struct sa *peer,
 		 tcp_estab_h *eh, tcp_recv_h *rh, tcp_close_h *ch, void *arg);
 int  tcp_local_get(const struct tcp_sock *ts, struct sa *local);
