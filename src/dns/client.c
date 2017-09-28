@@ -2,6 +2,7 @@
  * @file dns/client.c  DNS Client
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 #include <string.h>
 #include <re_types.h>
@@ -825,17 +826,18 @@ static void dnsc_destructor(void *data)
 
 
 /**
- * Allocate a DNS Client
+ * Allocate a Bindable DNS Client
  *
  * @param dcpp Pointer to allocated DNS Client
  * @param conf Optional DNS configuration, NULL for default
+ * @param local Local network address
  * @param srvv DNS servers
  * @param srvc Number of DNS Servers
  *
  * @return 0 if success, otherwise errorcode
  */
-int dnsc_alloc(struct dnsc **dcpp, const struct dnsc_conf *conf,
-	       const struct sa *srvv, uint32_t srvc)
+int dnsc_alloc_bind(struct dnsc **dcpp, const struct dnsc_conf *conf,
+	       const struct sa *local, const struct sa *srvv, uint32_t srvc)
 {
 	struct dnsc *dnsc;
 	int err;
@@ -856,7 +858,7 @@ int dnsc_alloc(struct dnsc **dcpp, const struct dnsc_conf *conf,
 	if (err)
 		goto out;
 
-	err = udp_listen(&dnsc->us, NULL, udp_recv_handler, dnsc);
+	err = udp_listen(&dnsc->us, local, udp_recv_handler, dnsc);
 	if (err)
 		goto out;
 
@@ -877,6 +879,21 @@ int dnsc_alloc(struct dnsc **dcpp, const struct dnsc_conf *conf,
 	return err;
 }
 
+/**
+ * Allocate a DNS Client
+ *
+ * @param dcpp Pointer to allocated DNS Client
+ * @param conf Optional DNS configuration, NULL for default
+ * @param srvv DNS servers
+ * @param srvc Number of DNS Servers
+ *
+ * @return 0 if success, otherwise errorcode
+ */
+int dnsc_alloc(struct dnsc **dcpp, const struct dnsc_conf *conf,
+         const struct sa *srvv, uint32_t srvc)
+{
+  return dnsc_alloc_bind(dcpp, conf, NULL, srvv, srvc);
+}
 
 /**
  * Set the DNS Servers on a DNS Client

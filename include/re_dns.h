@@ -2,6 +2,7 @@
  * @file re_dns.h  Interface to DNS module
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 
 
@@ -198,6 +199,8 @@ struct dnsc_conf {
 	uint32_t idle_timeout;  /* in [ms] */
 };
 
+int  dnsc_alloc_bind(struct dnsc **dcpp, const struct dnsc_conf *conf,
+    const struct sa *local, const struct sa *srvv, uint32_t srvc);
 int  dnsc_alloc(struct dnsc **dcpp, const struct dnsc_conf *conf,
 		const struct sa *srvv, uint32_t srvc);
 int  dnsc_srv_set(struct dnsc *dnsc, const struct sa *srvv, uint32_t srvc);
