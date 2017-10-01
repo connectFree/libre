@@ -2,6 +2,7 @@
  * @file tcp.c  Transport Control Protocol
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
@@ -378,6 +379,33 @@ static void tcp_recv_handler(int flags, void *arg)
 	}
 	else if (n < 0) {
 		DEBUG_WARNING("recv handler: recv(): %m\n", errno);
+#ifdef WIN32
+      /* Special error handling for Windows */
+      switch (WSAGetLastError()) {
+        case WSAENETDOWN:
+          /*@FALLTHROUGH@*/
+        case WSAEFAULT:
+          /*@FALLTHROUGH@*/
+        case WSAENOTCONN:
+          /*@FALLTHROUGH@*/
+        case WSAEINTR:
+          /*@FALLTHROUGH@*/
+        case WSAENOTSOCK:
+          /*@FALLTHROUGH@*/
+        case WSAESHUTDOWN:
+          /*@FALLTHROUGH@*/
+        case WSAEINVAL:
+          /*@FALLTHROUGH@*/
+        case WSAECONNABORTED:
+          /*@FALLTHROUGH@*/
+        case WSAETIMEDOUT:
+          /*@FALLTHROUGH@*/
+        case WSAECONNRESET:
+          conn_close(tc, errno);
+        default:
+          break;
+      }
+#endif
 		goto out;
 	}
 
