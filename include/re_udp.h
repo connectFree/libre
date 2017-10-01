@@ -43,8 +43,8 @@ int  udp_thread_attach(struct udp_sock *us);
 void udp_thread_detach(struct udp_sock *us);
 int  udp_sock_fd(const struct udp_sock *us, int af);
 
-int  udp_multicast_join(struct udp_sock *us, const struct sa *group);
-int  udp_multicast_leave(struct udp_sock *us, const struct sa *group);
+int  udp_multicast_join(struct udp_sock *us, const struct sa *group, unsigned int index);
+int  udp_multicast_leave(struct udp_sock *us, const struct sa *group, unsigned int index);
 
 
 /* Helper API */

@@ -2,6 +2,7 @@
  * @file mcast.c  UDP Multicast
  *
  * Copyright (C) 2010 Creytiv.com
+ * Copyright (C) 2017 kristopher tate & connectFree Corporation
  */
 
 #define _BSD_SOURCE 1
@@ -13,7 +14,7 @@
 
 
 static int multicast_update(struct udp_sock *us, const struct sa *group,
-			    bool join)
+			    bool join, unsigned int index)
 {
 	struct ip_mreq mreq;
 #ifdef HAVE_INET6
@@ -40,7 +41,7 @@ static int multicast_update(struct udp_sock *us, const struct sa *group,
 #ifdef HAVE_INET6
 	case AF_INET6:
 		mreq6.ipv6mr_multiaddr = group->u.in6.sin6_addr;
-		mreq6.ipv6mr_interface = 0;
+		mreq6.ipv6mr_interface = index;
 
 		err = udp_setsockopt(us, IPPROTO_IPV6,
 				     join
@@ -58,13 +59,15 @@ static int multicast_update(struct udp_sock *us, const struct sa *group,
 }
 
 
-int udp_multicast_join(struct udp_sock *us, const struct sa *group)
+int udp_multicast_join( struct udp_sock *us, const struct sa *group
+                      , unsigned int index )
 {
-	return multicast_update(us, group, true);
+	return multicast_update(us, group, true, index);
 }
 
 
-int udp_multicast_leave(struct udp_sock *us, const struct sa *group)
+int udp_multicast_leave(struct udp_sock *us, const struct sa *group
+                       , unsigned int index )
 {
-	return multicast_update(us, group, false);
+	return multicast_update(us, group, false, index);
 }
